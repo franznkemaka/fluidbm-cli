@@ -1,0 +1,25 @@
+{
+    "name": "@fluidbm/cli",
+    "version": "0.0.1",
+    "description": "Fluidbm CLI to design models in secs",
+    "private": true,
+    "main": "index.js",
+    "bin": {
+        "fluidbm": "./index.js"
+    },
+    "keywords": [
+        "fluidbm",
+        "laravel",
+        "cli"
+    ],
+    "dependencies": {
+        "axios": "^0.24.0",
+        "chalk": "^4.1.2",
+        "clear": "^0.1.0",
+        "configstore": "^5.0.0",
+        "figlet": "^1.5.2",
+        "lodash": "^4.17.21",
+        "prompt": "^1.2.0",
+        "yargs": "^17.3.0"
+    }
+}
