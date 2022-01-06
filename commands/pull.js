@@ -24,7 +24,7 @@ const fetchSchemaCode = async (schemaId) => {
                     '❌ Invalid Fluidbm CLI Token, please use `fluidbm auth` to authenticate then try agin',
                 ),
             );
-        } else if (e?.response.status == 404) {
+        } else if (e?.response?.status == 404) {
             console.log(
                 chalk.red(
                     '❌ Project no longer available, please use `fluidbm clone --force` to re-clone then try agin',
@@ -42,6 +42,7 @@ const pullCommand = {
     command: 'pull',
     describe: 'fetches all generated remote and saves it locally',
     handler: async (argv) => {
+        const startTime = process.hrtime();
         const isDryRun = argv.dryRun === true;
         try {
             if (!fluidbm.isAuthenticated()) {
@@ -90,11 +91,7 @@ const pullCommand = {
             for (const model of models) {
                 const modelFilePath = path.join(modelBaseDir, model.filename);
                 !isDryRun && (await fs.writeFile(modelFilePath, model.content));
-                console.log(
-                    chalk.green(
-                        `│  ├─ ✔ Successfully created Model (${model.name}) at ${modelFilePath}`,
-                    ),
-                );
+                console.log('│  ├─ ' + chalk.green(model.name));
             }
 
             // -- model factories
@@ -108,11 +105,7 @@ const pullCommand = {
             for (const modelFactory of schema.modelFactories) {
                 const modelFactoryFilePath = path.join(modelFactoryBaseDir, modelFactory.filename);
                 !isDryRun && (await fs.writeFile(modelFactoryFilePath, modelFactory.content));
-                console.log(
-                    chalk.green(
-                        `│  ├─ ✔ Successfully created ${modelFactory.name}Factory at ${modelFactoryFilePath}`,
-                    ),
-                );
+                console.log('│  ├─ ' + chalk.green(modelFactory.name + 'Factory'));
             }
 
             // -- migrations
@@ -126,11 +119,7 @@ const pullCommand = {
             for (const migration of schema.migrations) {
                 const migrationFilePath = path.join(migrationBaseDir, migration.filename);
                 !isDryRun && (await fs.writeFile(migrationFilePath, migration.content));
-                console.log(
-                    chalk.green(
-                        `│  ├─ ✔ Successfully created ${migration.name} table migration at ${migrationFilePath}`,
-                    ),
-                );
+                console.log('│  ├─ ' + chalk.green(migration.name));
             }
 
             // -- db seeder
@@ -143,12 +132,14 @@ const pullCommand = {
                 console.log('├─── Seeder');
                 const seederFilePath = path.join(seederBaseDir, dbSeeder.filename);
                 !isDryRun && (await fs.writeFile(seederFilePath, dbSeeder.content));
-                console.log(
-                    chalk.green(
-                        `│  ├─ ✔ Successfully created ${dbSeeder.name} seeder at ${seederFilePath}`,
-                    ),
-                );
+                console.log('│  ├─ ' + chalk.green(dbSeeder.name));
             }
+            console.log(`${chalk.green('success')} Pull completed`);
+            const executionTime = process.hrtime(startTime);
+
+            console.log(
+                `Done in ${(executionTime[0] * 1000 + executionTime[1] / 1e9).toFixed(2)}s`,
+            );
         } catch (e) {
             console.log(chalk.red('An unexpected error occurred whiling cloning'));
             console.error(e);
