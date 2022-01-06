@@ -1,0 +1,24 @@
+name: 🚀 Publish to npm
+
+on:
+    push:
+        tags:
+            - v*
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+        name: 🚀 Publish to npm
+        if: contains(github.event.head_commit.message, '✔️') == false && contains(github.event.head_commit.message, '[ci skip]') == false
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: 16
+
+            - name: Install dependencies
+              run: npm install
+
+            - uses: JS-DevTools/npm-publish@v1
+              with:
+                  token: ${{ secrets.NPM_TOKEN }}
