@@ -1,16 +1,28 @@
 {
-    "name": "@fluidbm/cli",
-    "version": "0.0.1",
-    "description": "Fluidbm CLI to design models in secs",
-    "private": true,
+    "name": "fluidbm-cli",
+    "version": "1.0.0",
+    "description": "Fluidbm CLI to import your design models in secs",
     "main": "index.js",
     "bin": {
         "fluidbm": "./index.js"
     },
+    "author": "Franz Nkemaka <franz@rigle.co>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/franznkemaka/fluidbm-cli"
+    },
+    "bugs": {
+        "url": "https://github.com/franznkemaka/fluidbm-cli/issues"
+    },
+    "homepage": "https://github.com/franznkemaka/fluidbm-cli#readme",
     "keywords": [
         "fluidbm",
         "laravel",
-        "cli"
+        "cli",
+        "dbm",
+        "database",
+        "tool"
     ],
     "dependencies": {
         "axios": "^0.24.0",
