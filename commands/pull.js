@@ -7,6 +7,26 @@ const path = require('path');
 
 const getProjectPath = (relativePath) => path.join(process.cwd(), '/', relativePath);
 
+const getStructure = (module) => module === undefined ? pathStructure.app : pathStructure.module;
+const getFolderPath = (folder, module = undefined) => path.join(process.cwd(), '/', getStructure(module).root(module), '/', getStructure(module)[folder]);
+
+const pathStructure = {
+    app: {
+        root: () => 'app',
+        models: 'Models',
+        factories: 'database/factories',
+        migrations: 'database/migrations',
+        seeders: 'database/seeders',
+    },
+    module: {
+        root: (module) => 'Modules/' + module,
+        models: 'Entities',
+        factories: 'Database/factories',
+        migrations: 'Database/migrations',
+        seeders: 'Database/seeders',
+    }
+}
+
 const fetchSchemaCode = async (schemaId) => {
     try {
         res = await axios.get(`${fluidbm.baseUrl}/api/schema/${schemaId}/code`, {
@@ -39,7 +59,7 @@ const fetchSchemaCode = async (schemaId) => {
 };
 
 const pullCommand = {
-    command: 'pull',
+    command: 'pull [module]',
     describe: 'fetches all generated remote and saves it locally',
     handler: async (argv) => {
         const startTime = process.hrtime();
@@ -80,13 +100,16 @@ const pullCommand = {
                 );
             }
 
-            const modelBaseDir = getProjectPath('app/Models');
+            const structure = getStructure(argv.module)
+            console.log(chalk.magenta(structure.root(argv.module)));
+
+            const modelBaseDir = getFolderPath('models', argv.module);
             if (!fsSync.existsSync(modelBaseDir)) {
                 !isDryRun && (await fs.mkdir(modelBaseDir, { recursive: true }));
             }
 
             if (models.length > 0) {
-                console.log('├─── Models');
+                console.log('├─── Models ─> ' + chalk.magenta(structure.models));
             }
             for (const model of models) {
                 const modelFilePath = path.join(modelBaseDir, model.filename);
@@ -95,12 +118,12 @@ const pullCommand = {
             }
 
             // -- model factories
-            const modelFactoryBaseDir = getProjectPath('database/factories');
+            const modelFactoryBaseDir = getFolderPath('factories', argv.module);
             if (!fsSync.existsSync(modelFactoryBaseDir)) {
                 !isDryRun && (await fs.mkdir(modelFactoryBaseDir, { recursive: true }));
             }
             if (schema.modelFactories?.length > 0) {
-                console.log('├─── Model Factories');
+                console.log('├─── Model Factories ─> ' + chalk.magenta(structure.factories));
             }
             for (const modelFactory of schema.modelFactories) {
                 const modelFactoryFilePath = path.join(modelFactoryBaseDir, modelFactory.filename);
@@ -109,12 +132,12 @@ const pullCommand = {
             }
 
             // -- migrations
-            const migrationBaseDir = getProjectPath('database/migrations');
+            const migrationBaseDir = getFolderPath('migrations', argv.module);
             if (!fsSync.existsSync(migrationBaseDir)) {
                 !isDryRun && (await fs.mkdir(migrationBaseDir, { recursive: true }));
             }
             if (schema.migrations?.length > 0) {
-                console.log('├─── Migrations');
+                console.log('├─── Migrations ─> ' + chalk.magenta(structure.migrations));
             }
             for (const migration of schema.migrations) {
                 const migrationFilePath = path.join(migrationBaseDir, migration.filename);
@@ -124,12 +147,12 @@ const pullCommand = {
 
             // -- db seeder
             const dbSeeder = schema.dbSeeder;
-            const seederBaseDir = getProjectPath('database/seeders');
+            const seederBaseDir = getFolderPath('seeders', argv.module);
             if (!fsSync.existsSync(seederBaseDir)) {
                 !isDryRun && (await fs.mkdir(seederBaseDir, { recursive: true }));
             }
             if (dbSeeder?.content?.length > 0) {
-                console.log('├─── Seeder');
+                console.log('├─── Seeder ─> ' + chalk.magenta(structure.seeders));
                 const seederFilePath = path.join(seederBaseDir, dbSeeder.filename);
                 !isDryRun && (await fs.writeFile(seederFilePath, dbSeeder.content));
                 console.log('│  ├─ ' + chalk.green(dbSeeder.name));
