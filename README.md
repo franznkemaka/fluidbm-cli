@@ -49,6 +49,12 @@ It automatically generate the Models, Factories, Seeds and Migrations and add it
 
 `$ fluidbm pull`
 
+#### Laravel Module compatibility
+
+If you have a [module structure](https://github.com/nWidart/laravel-modules), specify the module name (ex: `module_name`) to pull in specifed module directories.
+
+`$ fluidbm pull module_name`
+
 ## ⚖️ Terms & Conditions
 
 By using Fluidbm CLI, you agree to the [terms & conditions](https://fluidbm.com/terms), and our [privacy policy](https://fluidbm.com/privacy).
